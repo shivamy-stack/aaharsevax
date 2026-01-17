@@ -1,38 +1,51 @@
-import { type User, type InsertUser } from "@shared/schema";
-import { randomUUID } from "crypto";
-
-// modify the interface with any CRUD methods
-// you might need
+import { db } from "./db";
+import {
+  donations,
+  ngoRequests,
+  type InsertDonation,
+  type InsertNgoRequest,
+  type Donation,
+  type NgoRequest
+} from "@shared/schema";
+import { desc } from "drizzle-orm";
 
 export interface IStorage {
-  getUser(id: string): Promise<User | undefined>;
-  getUserByUsername(username: string): Promise<User | undefined>;
-  createUser(user: InsertUser): Promise<User>;
+  createDonation(donation: InsertDonation): Promise<Donation>;
+  getDonations(): Promise<Donation[]>;
+  createNgoRequest(request: InsertNgoRequest): Promise<NgoRequest>;
+  getNgoRequests(): Promise<NgoRequest[]>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<string, User>;
-
-  constructor() {
-    this.users = new Map();
+export class DatabaseStorage implements IStorage {
+  async createDonation(donation: InsertDonation): Promise<Donation> {
+    const [newDonation] = await db
+      .insert(donations)
+      .values(donation)
+      .returning();
+    return newDonation;
   }
 
-  async getUser(id: string): Promise<User | undefined> {
-    return this.users.get(id);
+  async getDonations(): Promise<Donation[]> {
+    return await db
+      .select()
+      .from(donations)
+      .orderBy(desc(donations.createdAt));
   }
 
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+  async createNgoRequest(request: InsertNgoRequest): Promise<NgoRequest> {
+    const [newRequest] = await db
+      .insert(ngoRequests)
+      .values(request)
+      .returning();
+    return newRequest;
   }
 
-  async createUser(insertUser: InsertUser): Promise<User> {
-    const id = randomUUID();
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
-    return user;
+  async getNgoRequests(): Promise<NgoRequest[]> {
+    return await db
+      .select()
+      .from(ngoRequests)
+      .orderBy(desc(ngoRequests.createdAt));
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();
