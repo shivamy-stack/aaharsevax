@@ -52,6 +52,11 @@ export async function registerRoutes(
     }
   });
 
+  app.get(api.repository.list.path, async (_req, res) => {
+    const results = await storage.getRepository();
+    res.json(results);
+  });
+
   // Seed data function
   async function seedData() {
     const existingDonations = await storage.getDonations();

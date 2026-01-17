@@ -3,6 +3,15 @@ import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
 // === TABLE DEFINITIONS ===
+export const foodRepository = pgTable("food_repository", {
+  id: serial("id").primaryKey(),
+  foodType: text("food_type").notNull(),
+  totalDonated: text("total_donated").notNull().default("0"),
+  totalRequested: text("total_requested").notNull().default("0"),
+  city: text("city").notNull(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 export const donations = pgTable("donations", {
   id: serial("id").primaryKey(),
   donorName: text("donor_name").notNull(),

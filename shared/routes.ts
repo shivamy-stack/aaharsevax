@@ -49,6 +49,15 @@ export const api = {
         200: z.array(z.custom<typeof ngoRequests.$inferSelect>()),
       },
     },
+  },
+  repository: {
+    list: {
+      method: 'GET' as const,
+      path: '/api/repository',
+      responses: {
+        200: z.array(z.custom<typeof foodRepository.$inferSelect>()),
+      },
+    },
   }
 };
 
