@@ -1,7 +1,23 @@
 import { z } from 'zod';
-import { insertDonationSchema, insertNgoRequestSchema, donations, ngoRequests } from './schema';
+import { 
+  insertDonationSchema, 
+  insertNgoRequestSchema, 
+  donations, 
+  ngoRequests, 
+  foodRepository,
+  type InsertDonation,
+  type InsertNgoRequest
+} from './schema';
 
-export { insertDonationSchema, insertNgoRequestSchema, donations, ngoRequests };
+export { 
+  insertDonationSchema, 
+  insertNgoRequestSchema, 
+  donations, 
+  ngoRequests, 
+  foodRepository,
+  type InsertDonation,
+  type InsertNgoRequest 
+};
 
 export const errorSchemas = {
   validation: z.object({

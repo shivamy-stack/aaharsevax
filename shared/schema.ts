@@ -64,3 +64,6 @@ export type InsertDonation = z.infer<typeof insertDonationSchema>;
 
 export type NgoRequest = typeof ngoRequests.$inferSelect;
 export type InsertNgoRequest = z.infer<typeof insertNgoRequestSchema>;
+
+export type FoodRepository = typeof foodRepository.$inferSelect;
+export const insertFoodRepositorySchema = createInsertSchema(foodRepository).omit({ id: true, updatedAt: true });
