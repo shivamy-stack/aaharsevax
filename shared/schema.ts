@@ -3,15 +3,6 @@ import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
 // === TABLE DEFINITIONS ===
-export const foodRepository = pgTable("food_repository", {
-  id: serial("id").primaryKey(),
-  foodType: text("food_type").notNull(),
-  totalDonated: text("total_donated").notNull().default("0"),
-  totalRequested: text("total_requested").notNull().default("0"),
-  city: text("city").notNull(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-});
-
 export const donations = pgTable("donations", {
   id: serial("id").primaryKey(),
   donorName: text("donor_name").notNull(),
@@ -21,7 +12,8 @@ export const donations = pgTable("donations", {
   city: text("city").notNull(), // Limited list selection
   area: text("area"),
   isFresh: boolean("is_fresh").notNull().default(true), // Confirms prepared within 2 hours
-  status: text("status").notNull().default("pending"),
+  status: text("status").notNull().default("available"), // "available", "delivered", "expired"
+  safeUntil: timestamp("safe_until"), // Live inventory time limit
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -64,6 +56,3 @@ export type InsertDonation = z.infer<typeof insertDonationSchema>;
 
 export type NgoRequest = typeof ngoRequests.$inferSelect;
 export type InsertNgoRequest = z.infer<typeof insertNgoRequestSchema>;
-
-export type FoodRepository = typeof foodRepository.$inferSelect;
-export const insertFoodRepositorySchema = createInsertSchema(foodRepository).omit({ id: true, updatedAt: true });

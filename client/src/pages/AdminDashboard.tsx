@@ -1,19 +1,19 @@
 import { useDonations } from "@/hooks/use-donations";
 import { useNgoRequests } from "@/hooks/use-ngo-requests";
-import { useRepository } from "@/hooks/use-repository";
+import { useInventory } from "@/hooks/use-inventory";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Calendar, MapPin, Phone, Database } from "lucide-react";
+import { Loader2, Calendar, MapPin, Phone, Database, Clock } from "lucide-react";
 import { format } from "date-fns";
 
 export default function AdminDashboard() {
   const { data: donations, isLoading: loadingDonations } = useDonations();
   const { data: requests, isLoading: loadingRequests } = useNgoRequests();
-  const { data: repository, isLoading: loadingRepository } = useRepository();
+  const { data: inventory, isLoading: loadingInventory } = useInventory();
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -40,7 +40,7 @@ export default function AdminDashboard() {
           <TabsList className="w-full md:w-auto p-1 h-12 rounded-xl bg-muted/50 border border-border/50">
             <TabsTrigger value="donations" className="h-10 rounded-lg text-base px-6">Donations</TabsTrigger>
             <TabsTrigger value="requests" className="h-10 rounded-lg text-base px-6">NGO Requests</TabsTrigger>
-            <TabsTrigger value="repository" className="h-10 rounded-lg text-base px-6">Food Repository</TabsTrigger>
+            <TabsTrigger value="inventory" className="h-10 rounded-lg text-base px-6">Food Inventory</TabsTrigger>
           </TabsList>
 
           <TabsContent value="donations">
@@ -166,49 +166,55 @@ export default function AdminDashboard() {
             </Card>
           </TabsContent>
 
-          <TabsContent value="repository">
+          <TabsContent value="inventory">
             <Card className="shadow-sm border-border/60">
               <CardHeader>
-                <CardTitle>Food Repository</CardTitle>
-                <CardDescription>Consolidated stats of available and requested food by city.</CardDescription>
+                <CardTitle>Live Food Inventory</CardTitle>
+                <CardDescription>Available items that are fresh and undelivered.</CardDescription>
               </CardHeader>
               <CardContent>
-                {loadingRepository ? (
+                {loadingInventory ? (
                   <div className="flex justify-center py-12"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>
-                ) : !repository || repository.length === 0 ? (
-                  <div className="text-center py-12 text-muted-foreground">No repository data available yet.</div>
+                ) : !inventory || inventory.length === 0 ? (
+                  <div className="text-center py-12 text-muted-foreground">No available food items in inventory.</div>
                 ) : (
                   <div className="overflow-x-auto rounded-lg border border-border/50">
                     <Table>
                       <TableHeader className="bg-muted/30">
                         <TableRow>
-                          <TableHead>City</TableHead>
+                          <TableHead>Donor</TableHead>
                           <TableHead>Category</TableHead>
-                          <TableHead className="text-center">Total Donated</TableHead>
-                          <TableHead className="text-center">Total Requested</TableHead>
-                          <TableHead className="text-right">Last Updated</TableHead>
+                          <TableHead>Quantity</TableHead>
+                          <TableHead>Location</TableHead>
+                          <TableHead>Safe Until</TableHead>
+                          <TableHead className="text-right">Status</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {repository.map((item) => (
+                        {inventory.map((item) => (
                           <TableRow key={item.id} className="hover:bg-muted/5">
-                            <TableCell className="font-medium">
-                              <div className="flex items-center gap-2">
-                                <MapPin className="h-4 w-4 text-primary" />
-                                {item.city}
+                            <TableCell className="font-medium">{item.donorName}</TableCell>
+                            <TableCell>
+                              <Badge variant={item.foodType === 'Cooked' ? 'default' : 'outline'} className={item.foodType === 'Cooked' ? 'bg-orange-500 hover:bg-orange-600' : ''}>
+                                {item.foodType}
+                              </Badge>
+                            </TableCell>
+                            <TableCell>{item.quantity}</TableCell>
+                            <TableCell>
+                              <div className="flex items-center gap-1">
+                                <MapPin className="h-3 w-3 text-muted-foreground" /> {item.city}
                               </div>
                             </TableCell>
                             <TableCell>
-                              <Badge variant="outline">{item.foodType}</Badge>
+                              <div className="flex items-center gap-1 text-sm">
+                                <Clock className="h-3 w-3 text-muted-foreground" />
+                                {item.safeUntil ? format(new Date(item.safeUntil), 'p') : 'N/A'}
+                              </div>
                             </TableCell>
-                            <TableCell className="text-center">
-                              <span className="text-lg font-bold text-primary">{item.totalDonated}</span>
-                            </TableCell>
-                            <TableCell className="text-center">
-                              <span className="text-lg font-bold text-secondary">{item.totalRequested}</span>
-                            </TableCell>
-                            <TableCell className="text-right text-sm text-muted-foreground">
-                              {item.updatedAt && format(new Date(item.updatedAt), 'MMM d, p')}
+                            <TableCell className="text-right">
+                              <Badge className="bg-green-100 text-green-700 hover:bg-green-200 uppercase text-[10px] tracking-wider">
+                                {item.status}
+                              </Badge>
                             </TableCell>
                           </TableRow>
                         ))}

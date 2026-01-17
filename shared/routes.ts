@@ -4,7 +4,6 @@ import {
   insertNgoRequestSchema, 
   donations, 
   ngoRequests, 
-  foodRepository,
   type InsertDonation,
   type InsertNgoRequest
 } from './schema';
@@ -14,7 +13,6 @@ export {
   insertNgoRequestSchema, 
   donations, 
   ngoRequests, 
-  foodRepository,
   type InsertDonation,
   type InsertNgoRequest 
 };
@@ -66,12 +64,12 @@ export const api = {
       },
     },
   },
-  repository: {
+  inventory: {
     list: {
       method: 'GET' as const,
-      path: '/api/repository',
+      path: '/api/inventory',
       responses: {
-        200: z.array(z.custom<typeof foodRepository.$inferSelect>()),
+        200: z.array(z.custom<typeof donations.$inferSelect>()),
       },
     },
   }

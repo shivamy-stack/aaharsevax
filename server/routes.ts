@@ -52,8 +52,8 @@ export async function registerRoutes(
     }
   });
 
-  app.get(api.repository.list.path, async (_req, res) => {
-    const results = await storage.getRepository();
+  app.get(api.inventory.list.path, async (_req, res) => {
+    const results = await storage.getInventory();
     res.json(results);
   });
 
