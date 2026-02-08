@@ -23,7 +23,7 @@ export function Navbar() {
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2 font-display text-2xl font-bold text-primary hover:opacity-90 transition-opacity">
           <HeartHandshake className="h-8 w-8" />
-          <span>AharSetu</span>
+          <span>aaharsevaX</span>
         </Link>
 
         {/* Desktop Menu */}

@@ -1,10 +1,10 @@
-import { pgTable, text, serial, boolean, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, integer, timestamp, boolean } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
 // === TABLE DEFINITIONS ===
 export const donations = pgTable("donations", {
-  id: serial("id").primaryKey(),
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
   donorName: text("donor_name").notNull(),
   contactNumber: text("contact_number").notNull(),
   foodType: text("food_type").notNull(), // "Cooked" or "Packed"
@@ -18,7 +18,7 @@ export const donations = pgTable("donations", {
 });
 
 export const ngoRequests = pgTable("ngo_requests", {
-  id: serial("id").primaryKey(),
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
   ngoName: text("ngo_name").notNull(),
   contactNumber: text("contact_number").notNull(),
   requirements: text("requirements").notNull(),

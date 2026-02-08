@@ -1,3 +1,4 @@
+import "dotenv/config";
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
@@ -62,6 +63,41 @@ app.use((req, res, next) => {
 (async () => {
   await registerRoutes(httpServer, app);
 
+  // Provide a lightweight API index and a simple `/api/users` endpoint
+  // Content-negotiation: return HTML for browsers (Accept: text/html)
+  // and JSON for API tools (curl/postman with Accept: application/json).
+  app.get('/api', (_req: Request, res: Response) => {
+    const accept = (_req.headers.accept || '').toLowerCase();
+    const info = {
+      name: process.env.npm_package_name || 'aaharsevax',
+      version: process.env.npm_package_version || process.env.npm_package_version || '1.0.0',
+      endpoints: ['/api/donations', '/api/ngo-requests', '/api/inventory', '/api/users']
+    };
+
+    if (accept.includes('text/html')) {
+      return res
+        .status(200)
+        .send(`<!doctype html><html><head><meta charset="utf-8"><title>API - ${info.name}</title></head><body><h1>${info.name} API</h1><p>Available endpoints:</p><ul>${info.endpoints.map(e=>`<li><a href="${e}">${e}</a></li>`).join('')}</ul></body></html>`);
+    }
+
+    return res.status(200).json(info);
+  });
+
+  // Minimal `/api/users` route so tools and browsers get a stable response.
+  // Returns HTML for browsers and JSON for API clients.
+  app.get('/api/users', (_req: Request, res: Response) => {
+    const accept = (_req.headers.accept || '').toLowerCase();
+    const users: Array<{ id: number; name: string }> = [];
+
+    if (accept.includes('text/html')) {
+      return res
+        .status(200)
+        .send(`<!doctype html><html><head><meta charset="utf-8"><title>Users - ${process.env.npm_package_name || 'aaharsevax'}</title></head><body><h1>Users</h1><p>No users yet.</p></body></html>`);
+    }
+
+    return res.status(200).json(users);
+  });
+
   app.use((err: any, _req: Request, res: Response, next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";
@@ -85,19 +121,12 @@ app.use((req, res, next) => {
     await setupVite(httpServer, app);
   }
 
-  // ALWAYS serve the app on the port specified in the environment variable PORT
-  // Other ports are firewalled. Default to 5000 if not specified.
-  // this serves both the API and the client.
-  // It is the only port that is not firewalled.
+  // VERCEL COMPATIBILITY NOTE:
+  // Vercel Functions serve both the Express API and static client files.
+  // We listen on localhost:PORT because Vercel's routing handles external access.
+  // This is the standard pattern for serverless Node.js applications on Vercel.
   const port = parseInt(process.env.PORT || "5000", 10);
-  httpServer.listen(
-    {
-      port,
-      host: "0.0.0.0",
-      reusePort: true,
-    },
-    () => {
+  httpServer.listen(port, "localhost", () => {
       log(`serving on port ${port}`);
-    },
-  );
+    });
 })();

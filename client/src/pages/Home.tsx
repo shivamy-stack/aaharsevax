@@ -62,7 +62,7 @@ export default function Home() {
                 transition={{ delay: 0.2, duration: 0.5 }}
                 className="text-xl text-muted-foreground max-w-2xl leading-relaxed"
               >
-                AharSetu connects restaurants, events, and individuals with surplus food to NGOs who distribute it to those in need. Join our mission to end hunger.
+                aaharsevaX connects restaurants, events, and individuals with surplus food to NGOs who distribute it to those in need. Join our mission to end hunger.
               </motion.p>
 
               <motion.div 

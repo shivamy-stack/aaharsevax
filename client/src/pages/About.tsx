@@ -12,7 +12,7 @@ export default function About() {
       <Navbar />
       <main className="flex-1">
         <PageHeader 
-          title="About AharSetu" 
+          title="About AaharsevaX" 
           description="We are on a mission to bridge the gap between hunger and excess food, creating a sustainable ecosystem for food redistribution."
         />
 
@@ -49,7 +49,7 @@ export default function About() {
             <h2 className="text-3xl font-bold font-display text-center">Why We Started</h2>
             <div className="prose prose-lg mx-auto text-muted-foreground">
               <p>
-                Every day, tons of food are wasted in restaurants, weddings, and households, while millions struggle to find their next meal. AharSetu (meaning "Food Bridge") was born out of a simple observation: the problem isn't a lack of food, but a lack of connection.
+                Every day, tons of food are wasted in restaurants, weddings, and households, while millions struggle to find their next meal. AaharsevaX (meaning "Food Bridge") was born out of a simple observation: the problem isn't a lack of food, but a lack of connection.
               </p>
               <p>
                 Our platform serves as that missing link. By simplifying the process of reporting excess food and matching it with local NGOs, we reduce response times and ensure food is consumed while it's fresh.

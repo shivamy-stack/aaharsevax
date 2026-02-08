@@ -5,7 +5,7 @@ export function Footer() {
     <footer className="w-full border-t border-border bg-card py-8 mt-auto">
       <div className="container mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4">
         <div className="text-sm text-muted-foreground">
-          © {new Date().getFullYear()} AharSetu. All rights reserved.
+          © {new Date().getFullYear()} aaharsevaX. All rights reserved.
         </div>
         
         <div className="flex items-center gap-2 text-sm font-medium text-foreground/80">
