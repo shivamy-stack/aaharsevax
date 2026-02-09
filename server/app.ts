@@ -4,15 +4,15 @@ import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
 
+declare module "http" {
+  interface IncomingMessage {
+    rawBody: unknown;
+  }
+}
+
 export async function createApp() {
   const app = express();
   const httpServer = createServer(app);
-
-  declare module "http" {
-    interface IncomingMessage {
-      rawBody: unknown;
-    }
-  }
 
   app.use(
     express.json({
