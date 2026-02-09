@@ -24,7 +24,7 @@ export default async function handler(req: any, res: any) {
     res.setHeader('Allow', 'GET, POST');
     return res.status(405).json({ message: 'Method Not Allowed' });
   } catch (err: any) {
-    console.error('ngo-requests handler error', err);
-    return res.status(500).json({ message: err?.message || 'Internal Server Error' });
+    console.error('ngo-requests handler error:', err?.message, err?.stack || err);
+    return res.status(500).json({ message: 'Internal Server Error' });
   }
 }
