@@ -76,4 +76,65 @@ export class DatabaseStorage implements IStorage {
   }
 }
 
-export const storage = new DatabaseStorage();
+// If `db` is not available (e.g., no DATABASE_URL set), provide a
+// lightweight in-memory fallback so the server and frontend can run
+// without a configured Postgres instance. This is useful for testing
+// and verifying deployment behavior on Vercel before wiring the DB.
+class InMemoryStorage implements IStorage {
+  private donations: Donation[] = [];
+  private requests: NgoRequest[] = [];
+  private donationId = 1;
+  private requestId = 1;
+
+  async createDonation(donation: InsertDonation): Promise<Donation> {
+    const id = this.donationId++;
+    const createdAt = new Date();
+    const safeUntil = donation.foodType === "Cooked" ? new Date(Date.now() + 4 * 60 * 60 * 1000) : null;
+    const newDonation: any = {
+      id,
+      donorName: donation.donorName,
+      contactNumber: donation.contactNumber,
+      foodType: donation.foodType,
+      quantity: donation.quantity,
+      city: donation.city,
+      area: (donation as any).area || null,
+      isFresh: (donation as any).isFresh ?? true,
+      status: "available",
+      safeUntil,
+      createdAt,
+    };
+    this.donations.unshift(newDonation);
+    return newDonation as Donation;
+  }
+
+  async getDonations(): Promise<Donation[]> {
+    return [...this.donations];
+  }
+
+  async getInventory(): Promise<Donation[]> {
+    const now = new Date();
+    return this.donations.filter(d => d.status === "available" && (!d.safeUntil || d.safeUntil > now));
+  }
+
+  async createNgoRequest(request: InsertNgoRequest): Promise<NgoRequest> {
+    const id = this.requestId++;
+    const createdAt = new Date();
+    const newRequest: any = {
+      id,
+      ngoName: request.ngoName,
+      contactNumber: request.contactNumber,
+      requirements: request.requirements,
+      city: request.city,
+      status: "open",
+      createdAt,
+    };
+    this.requests.unshift(newRequest);
+    return newRequest as NgoRequest;
+  }
+
+  async getNgoRequests(): Promise<NgoRequest[]> {
+    return [...this.requests];
+  }
+}
+
+export const storage: IStorage = db ? new DatabaseStorage() : new InMemoryStorage();
