@@ -54,10 +54,14 @@ export default async function handler(req, res) {
 
     if (req.method === 'POST') {
       try {
+        console.log('POST /api/ngo-requests - Received body:', JSON.stringify(req.body).substring(0, 200));
+        
         const input = insertNgoRequestSchema.parse(req.body);
+        console.log('POST /api/ngo-requests - Validated input:', JSON.stringify(input).substring(0, 200));
         
         const database = getDb();
         if (!database) {
+          console.error('POST /api/ngo-requests - Database not configured. DATABASE_URL:', !!process.env.DATABASE_URL);
           return res.status(503).json({ message: 'Database not configured' });
         }
 
@@ -68,15 +72,18 @@ export default async function handler(req, res) {
                     requirements, city, status, created_at as "createdAt"
         `;
         
+        console.log('POST /api/ngo-requests - Success. Created request ID:', result[0]?.id);
         return res.status(201).json(result[0]);
       } catch (err) {
         if (err instanceof z.ZodError) {
+          console.warn('POST /api/ngo-requests - Validation error:', err.errors[0]);
           const issue = err.errors[0];
           return res.status(400).json({ 
             message: issue.message, 
             field: issue.path.join('.') 
           });
         }
+        console.error('POST /api/ngo-requests - Error:', err?.message || String(err), err?.stack);
         throw err;
       }
     }
@@ -85,6 +92,10 @@ export default async function handler(req, res) {
     return res.status(405).json({ message: 'Method Not Allowed' });
   } catch (err) {
     console.error('ngo-requests handler error:', err?.message || err);
-    return res.status(500).json({ message: 'Internal Server Error' });
+    console.error('Stack:', err?.stack);
+    return res.status(500).json({ 
+      message: 'Internal Server Error',
+      error: process.env.NODE_ENV === 'development' ? err?.message : undefined
+    });
   }
 }
