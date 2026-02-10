@@ -2,18 +2,23 @@
   "version": 2,
   "builds": [
     {
-      "src": "api/**/*.js",
+      "src": "Food-Bridge/Food-bridge/server/index.ts",
       "use": "@vercel/node"
     },
     {
-      "src": "package.json",
+      "src": "Food-Bridge/Food-bridge/package.json",
       "use": "@vercel/static-build",
       "config": { "distDir": "dist/public" }
     }
   ],
-  "routes": [
-    { "src": "/api/(?<path>.*)", "dest": "/api/$path.js" },
-    { "handle": "filesystem" },
-    { "src": "/(.*)", "dest": "/index.html" }
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/Food-Bridge/Food-bridge/server/index.ts"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/Food-Bridge/Food-bridge/$1"
+    }
   ]
 }
